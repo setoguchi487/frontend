@@ -11,19 +11,35 @@ export default function SignIn() {
   const {setUserInfo} = useContext(UserContext);
 
   const onSignInClick = async () => {
-    const ret = await sign_in(userId, pass);
-    console.log(ret);
-    if (ret && ret.token) {
-      console.log(`Sign in successful. ${ret.user_id}, ${ret.token}`);
-      setUserInfo({
-        id: ret.user_id,
-        token: ret.token,
-      });
-      navigate('/main');
+    try {
+      console.log('Attempting login...');
+      const ret = await sign_in(userId, pass);
+      console.log('Login response:', ret);
+      
+      if (ret && ret.token) {
+        console.log(`Sign in successful. ${ret.user_id}, ${ret.token}`);
+        setUserInfo({
+          id: ret.user_id,
+          token: ret.token,
+        });
+        console.log('Navigating to /main');
+        navigate('/main');
+      } else {
+        console.error('No token received in response');
+        alert('ログインに失敗しました: トークンが取得できませんでした');
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      if (error.message) {
+        alert(`ログインエラー: ${error.message}`);
+      } else if (error.response) {
+        alert(`サーバーエラー: ${error.response.status} - ${error.response.statusText}`);
+      } else if (error.request) {
+        alert('ネットワークエラー: サーバーに接続できません。バックエンドのURLを確認してください。');
+      } else {
+        alert(`エラー: ${error}`);
+      }
     }
-    // console.log('onSignInClick');
-    // sign_in(userId, pass);
-
   };
 
   return(
