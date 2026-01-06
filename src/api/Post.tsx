@@ -10,8 +10,9 @@ const post = async (user_id: string, token: string,msg: string) => {
     console.log(res);
 }
 
-const getList = async (token: string) => {
-  const url = `${process.env.REACT_APP_API_URL}/post?token=${token}&records=10`;
+const getList = async (token: string, page: number = 1, records: number = 10) => {
+  const start = (page - 1) * records;
+  const url = `${process.env.REACT_APP_API_URL}/post?token=${token}&start=${start}&records=${records}`;
   const res = await axios.get(url);
   return res.data;
 };
