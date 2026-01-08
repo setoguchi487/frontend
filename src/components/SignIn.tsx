@@ -21,6 +21,7 @@ export default function SignIn() {
         setUserInfo({
           id: ret.user_id,
           token: ret.token,
+          name: ret.name,
         });
         console.log('Navigating to /main');
         navigate('/main');

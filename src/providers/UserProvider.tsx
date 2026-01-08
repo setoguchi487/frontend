@@ -5,6 +5,7 @@ import React from "react";
 export type UserInfo = {
   id: number;
   token: string;
+  name: string;
 };
 
 // UserContextの作成
@@ -19,7 +20,7 @@ export const UserContext = createContext(
 export const UserProvider = (props: any) => {
   const { children } = props;
   // UserInfoを保持する変数と更新関数の作成
-  const [userInfo, setUserInfo] = useState<UserInfo>({ id: 0, token: "" });
+  const [userInfo, setUserInfo] = useState<UserInfo>({ id: 0, token: "", name: "" });
   return (
     <>
       { /* UserContext.Providerはvalueに設定された値: ここではuserInfoとsetUserInfo を提供する */ }

@@ -38,8 +38,8 @@ export default function SideBar() {
 
   return (
     <SSideBar>
-      <SSideBarRow>hoge</SSideBarRow>
-      <SSideBarRow>hoge@example.com</SSideBarRow>
+      <SSideBarRow>{userInfo.name}</SSideBarRow>
+      <SSideBarRow>ID: {userInfo.id}</SSideBarRow>
       <SSideBarRow>
         <SSideBarTextArea
           rows={4}
