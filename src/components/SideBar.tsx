@@ -7,14 +7,14 @@ import styled from "styled-components";
 export default function SideBar() {
   const [msg, setMsg] = useState("");
   const { userInfo } = useContext(UserContext);
-  const { setPostList } = useContext(PostListContext);
+  const { setPostList, setCurrentPage } = useContext(PostListContext);
 
   const getPostList = async () => {
-    const posts = await getList(userInfo.token);
-    console.log(posts);
+    const response = await getList(userInfo.token, 1, 10);
+    console.log(response);
     let postList: Array<PostType> = [];
-    if (posts) {
-      posts.forEach((p: any) => {
+    if (response && response.posts) {
+      response.posts.forEach((p: any) => {
         postList.push({
           id: p.id,
           user_name: p.user_name,
@@ -28,7 +28,9 @@ export default function SideBar() {
 
   const onSendClick = async () => {
 	await post(String(userInfo.id), userInfo.token, msg);
+	setCurrentPage(1); // ページを1にリセット
 	await getPostList();
+	setMsg(""); // メッセージをクリア
 
 	// console.log("onSendClick");
 	// console.log(userInfo);

@@ -7,11 +7,10 @@ import styled from "styled-components";
 
 export default function PostList() {
 	//ポストリストコンテキスト、ユーザーコンテキストの使用
-	const { postList, setPostList } = useContext(PostListContext);
+	const { postList, setPostList, currentPage, setCurrentPage } = useContext(PostListContext);
 	const { userInfo } = useContext(UserContext);
 
 	// ページネーション用のステート
-	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
 	const recordsPerPage = 10;
 
