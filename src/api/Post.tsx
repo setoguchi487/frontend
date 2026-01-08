@@ -23,4 +23,18 @@ const getList = async (token: string, page: number = 1, records: number = 10) =>
   return res.data;
 };
 
-export { post, getList };
+const deletePost = async (postId: number, token: string) => {
+  console.log('=== Frontend deletePost API called ===');
+  console.log('postId:', postId);
+  console.log('token:', token);
+  
+  const url = `${process.env.REACT_APP_API_URL}/post/${postId}`;
+  const res = await axios.delete(url, {
+    data: { token: token }
+  });
+  console.log('delete response:', res);
+  console.log('=== Frontend deletePost API completed ===');
+  return res.data;
+};
+
+export { post, getList, deletePost };

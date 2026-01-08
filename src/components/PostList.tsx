@@ -1,7 +1,7 @@
 import Post from './Post';
 import { useContext, useEffect, useState } from "react";
 import { PostListContext, PostType } from "../providers/PostListProvider";
-import { getList } from "../api/Post";
+import { getList, deletePost } from "../api/Post";
 import { UserContext } from "../providers/UserProvider";
 import styled from "styled-components";
 
@@ -60,11 +60,24 @@ export default function PostList() {
 		getPostList(currentPage);
 	};
 
+	// 削除
+	const handleDelete = async (postId: number) => {
+		if (window.confirm('このメッセージを削除しますか？')) {
+			try {
+				await deletePost(postId, userInfo.token);
+				await getPostList(currentPage);
+			} catch (error) {
+				console.error('Failed to delete post:', error);
+				alert('削除に失敗しました');
+			}
+		}
+	};
+
 	return (
 		<SContainer>
 			<SPostList>
 				{postList.map((p) => (
-					<Post key={p.id} post={p} />
+					<Post key={p.id} post={p} onDelete={handleDelete} currentUser={userInfo.name} />
 				))}
 			</SPostList>
 			<SPaginationContainer>
