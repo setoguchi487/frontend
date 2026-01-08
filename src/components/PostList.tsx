@@ -7,7 +7,7 @@ import styled from "styled-components";
 
 export default function PostList() {
 	//ポストリストコンテキスト、ユーザーコンテキストの使用
-	const { postList, setPostList, currentPage, setCurrentPage } = useContext(PostListContext);
+	const { postList, setPostList, currentPage, setCurrentPage, refreshTrigger } = useContext(PostListContext);
 	const { userInfo } = useContext(UserContext);
 
 	// ページネーション用のステート
@@ -38,8 +38,11 @@ export default function PostList() {
 	
 	//コンポーネントがレンダリングされたときにポスト一覧を取得
 	useEffect(() => {
-		getPostList(currentPage);
-	}, [currentPage]);
+		if (userInfo.token) {
+			console.log('Fetching posts for page:', currentPage);
+			getPostList(currentPage);
+		}
+	}, [currentPage, userInfo.token, refreshTrigger]);
 
 	// 前のページへ
 	const handlePrevPage = () => {

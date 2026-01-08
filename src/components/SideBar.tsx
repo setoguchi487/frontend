@@ -1,39 +1,24 @@
 import { useState, useContext } from "react";
 import { UserContext } from "../providers/UserProvider";
-import { post, getList } from "../api/Post";
-import { PostListContext, PostType } from "../providers/PostListProvider";
+import { post } from "../api/Post";
+import { PostListContext } from "../providers/PostListProvider";
 import styled from "styled-components";
 
 export default function SideBar() {
   const [msg, setMsg] = useState("");
   const { userInfo } = useContext(UserContext);
-  const { setPostList, setCurrentPage } = useContext(PostListContext);
-
-  const getPostList = async () => {
-    const response = await getList(userInfo.token, 1, 10);
-    console.log(response);
-    let postList: Array<PostType> = [];
-    if (response && response.posts) {
-      response.posts.forEach((p: any) => {
-        postList.push({
-          id: p.id,
-          user_name: p.user_name,
-          content: p.content,
-          created_at: new Date(p.created_at),
-        });
-      });
-    }
-    setPostList(postList);
-  };
+  const { setCurrentPage, triggerRefresh } = useContext(PostListContext);
 
   const onSendClick = async () => {
-	await post(String(userInfo.id), userInfo.token, msg);
-	setCurrentPage(1); // ページを1にリセット
-	await getPostList();
-	setMsg(""); // メッセージをクリア
-
-	// console.log("onSendClick");
-	// console.log(userInfo);
+	try {
+		await post(String(userInfo.id), userInfo.token, msg);
+		setMsg(""); // メッセージをクリア
+		setCurrentPage(1); // ページを1にリセット
+		triggerRefresh(); // リストを強制更新
+	} catch (error) {
+		console.error('Failed to send message:', error);
+		alert('メッセージの送信に失敗しました');
+	}
   };
 
   return (
