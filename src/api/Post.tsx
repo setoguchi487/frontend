@@ -1,13 +1,19 @@
 import axios from "axios";
 
 const post = async (user_id: string, token: string,msg: string) => {
+    console.log('=== Frontend post API called ===');
+    console.log('user_id:', user_id);
+    console.log('token:', token);
+    console.log('msg:', msg);
+    
     const data = {
         message: msg,
         token: token
     };
     const url = `${process.env.REACT_APP_API_URL}/post`;
     const res = await axios.post(url, data);
-    console.log(res);
+    console.log('response:', res);
+    console.log('=== Frontend post API completed ===');
 }
 
 const getList = async (token: string, page: number = 1, records: number = 10) => {
