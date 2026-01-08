@@ -64,11 +64,18 @@ export default function PostList() {
 	const handleDelete = async (postId: number) => {
 		if (window.confirm('このメッセージを削除しますか？')) {
 			try {
+				console.log('Attempting to delete post:', postId);
 				await deletePost(postId, userInfo.token);
+				console.log('Delete successful');
 				await getPostList(currentPage);
-			} catch (error) {
+			} catch (error: any) {
 				console.error('Failed to delete post:', error);
-				alert('削除に失敗しました');
+				if (error.response) {
+					console.error('Error response:', error.response.data);
+					alert(`削除に失敗しました: ${error.response.data.message || error.response.statusText}`);
+				} else {
+					alert('削除に失敗しました');
+				}
 			}
 		}
 	};

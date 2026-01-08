@@ -28,13 +28,22 @@ const deletePost = async (postId: number, token: string) => {
   console.log('postId:', postId);
   console.log('token:', token);
   
-  const url = `${process.env.REACT_APP_API_URL}/post/${postId}`;
-  const res = await axios.delete(url, {
-    data: { token: token }
-  });
-  console.log('delete response:', res);
-  console.log('=== Frontend deletePost API completed ===');
-  return res.data;
+  const url = `${process.env.REACT_APP_API_URL}/post/${postId}?token=${token}`;
+  console.log('DELETE URL:', url);
+  
+  try {
+    const res = await axios.delete(url);
+    console.log('delete response:', res);
+    console.log('=== Frontend deletePost API completed ===');
+    return res.data;
+  } catch (error: any) {
+    console.error('Delete API error:', error);
+    if (error.response) {
+      console.error('Error status:', error.response.status);
+      console.error('Error data:', error.response.data);
+    }
+    throw error;
+  }
 };
 
 export { post, getList, deletePost };
