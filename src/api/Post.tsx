@@ -25,7 +25,7 @@ const getList = async (token: string, page: number = 1, records: number = 10) =>
 
 const deletePost = async (postId: number, token: string) => {
   console.log('=== Frontend deletePost API called ===');
-  console.log('postId:', postId);
+  console.log('postId:', postId, 'type:', typeof postId);
   console.log('token:', token);
   
   const url = `${process.env.REACT_APP_API_URL}/post/${postId}?token=${token}`;

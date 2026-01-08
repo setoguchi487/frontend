@@ -5,7 +5,13 @@ import styled from 'styled-components';
 export default function Post(props: any) {
 	const { children, post, onDelete, currentUser } = props;
 	
-	console.log('Post render:', { currentUser, post_user_name: post.user_name, match: currentUser === post.user_name });
+	console.log('Post render:', { 
+		id: post.id, 
+		id_type: typeof post.id,
+		currentUser, 
+		post_user_name: post.user_name, 
+		match: currentUser === post.user_name 
+	});
 	
 	const getDateStr = (dateObj: Date) => {
 		const year = post.created_at.getFullYear();
