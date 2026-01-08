@@ -55,6 +55,11 @@ export default function PostList() {
 		}
 	};
 
+	// リロード
+	const handleReload = () => {
+		getPostList(currentPage);
+	};
+
 	return (
 		<SContainer>
 			<SPostList>
@@ -78,6 +83,9 @@ export default function PostList() {
 				>
 					次のページ
 				</SPaginationButton>
+				<SReloadButton onClick={handleReload}>
+					🔄 リロード
+				</SReloadButton>
 			</SPaginationContainer>
 		</SContainer>
 	);	
@@ -129,4 +137,18 @@ const SPageInfo = styled.span`
   color: #333;
   min-width: 60px;
   text-align: center;
+`;
+
+const SReloadButton = styled.button`
+  padding: 8px 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  
+  &:hover {
+    background-color: #45a049;
+  }
 `;
