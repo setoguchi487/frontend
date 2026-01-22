@@ -45,5 +45,27 @@ const deletePost = async (postId: number, token: string) => {
     throw error;
   }
 };
+const searchPosts = async (query: string, token: string, page: number = 1, records: number = 10) => {
+  console.log('=== Frontend searchPosts API called ===');
+  console.log('query:', query, 'token:', token, 'page:', page, 'records:', records);
+  
+  const start = (page - 1) * records;
+  const url = `${process.env.REACT_APP_API_URL}/post/search?q=${encodeURIComponent(query)}&token=${token}&start=${start}&records=${records}`;
+  console.log('Search URL:', url);
+  
+  try {
+    const res = await axios.get(url);
+    console.log('search response:', res);
+    console.log('=== Frontend searchPosts API completed ===');
+    return res.data;
+  } catch (error: any) {
+    console.error('Search API error:', error);
+    if (error.response) {
+      console.error('Error status:', error.response.status);
+      console.error('Error data:', error.response.data);
+    }
+    throw error;
+  }
+};
 
-export { post, getList, deletePost };
+export { post, getList, deletePost, searchPosts };

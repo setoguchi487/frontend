@@ -1,7 +1,7 @@
 import Post from './Post';
 import { useContext, useEffect, useState } from "react";
 import { PostListContext, PostType } from "../providers/PostListProvider";
-import { getList, deletePost } from "../api/Post";
+import { getList, deletePost, searchPosts } from "../api/Post";
 import { UserContext } from "../providers/UserProvider";
 import styled from "styled-components";
 
@@ -13,6 +13,8 @@ export default function PostList() {
 	// ページネーション用のステート
 	const [totalPages, setTotalPages] = useState(1);
 	const recordsPerPage = 10;
+	const [searchQuery, setSearchQuery] = useState("");
+	const [isSearching, setIsSearching] = useState(false);
 
 	//ポスト一覧を取得する関数
 	const getPostList = async (page: number) => {
@@ -83,8 +85,73 @@ export default function PostList() {
 		}
 	};
 
+	// 検索実行
+	const handleSearch = async (e: React.FormEvent) => {
+		e.preventDefault();
+		if (searchQuery.trim() === "") {
+			setIsSearching(false);
+			setCurrentPage(1);
+			return;
+		}
+
+		setIsSearching(true);
+		setCurrentPage(1);
+		
+		try {
+			console.log('Searching for:', searchQuery);
+			const response = await searchPosts(searchQuery, userInfo.token, 1, recordsPerPage);
+			console.log('Search response:', response);
+
+			let postList: Array<PostType> = [];
+			if (response && response.posts) {
+				response.posts.forEach((p: any) => {
+					postList.push({
+						id: p.id,
+						user_name: p.user_name,
+						content: p.content,
+						created_at: new Date(p.created_at),
+					});
+				});
+				setTotalPages(Math.ceil(response.total / recordsPerPage));
+			}
+			setPostList(postList);
+		} catch (error: any) {
+			console.error('Search failed:', error);
+			alert('検索に失敗しました');
+		}
+	};
+
+	// 検索クリア
+	const handleClearSearch = async () => {
+		setSearchQuery("");
+		setIsSearching(false);
+		setCurrentPage(1);
+		await getPostList(1);
+	};
+
 	return (
 		<SContainer>
+			<SSearchContainer>
+				<SSearchForm onSubmit={handleSearch}>
+					<SSearchInput
+						type="text"
+						placeholder="メッセージを検索..."
+						value={searchQuery}
+						onChange={(e) => setSearchQuery(e.target.value)}
+					/>
+					<SSearchButton type="submit">🔍 検索</SSearchButton>
+					{isSearching && (
+						<SClearSearchButton type="button" onClick={handleClearSearch}>
+							✕ クリア
+						</SClearSearchButton>
+					)}
+				</SSearchForm>
+				{isSearching && (
+					<SSearchStatus>
+						検索結果: {postList.length} 件
+					</SSearchStatus>
+				)}
+			</SSearchContainer>
 			<SPostList>
 				{postList.map((p) => (
 					<Post key={p.id} post={p} onDelete={handleDelete} currentUser={userInfo.name} />
@@ -120,8 +187,71 @@ const SContainer = styled.div`
   height: 100%;
 `;
 
+const SSearchContainer = styled.div`
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #fafafa;
+`;
+
+const SSearchForm = styled.form`
+  display: flex;
+  gap: 8px;
+  align-items: center;
+`;
+
+const SSearchInput = styled.input`
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  
+  &:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+  }
+`;
+
+const SSearchButton = styled.button`
+  padding: 8px 16px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  
+  &:hover {
+    background-color: #1565c0;
+  }
+`;
+
+const SClearSearchButton = styled.button`
+  padding: 8px 12px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+  
+  &:hover {
+    background-color: #da190b;
+  }
+`;
+
+const SSearchStatus = styled.div`
+  font-size: 12px;
+  color: #666;
+  margin-top: 8px;
+`;
+
 const SPostList = styled.div`
-  margin-top: 16px;
+  margin-top: 8px;
   flex: 1;
   overflow-y: scroll;
 `;
