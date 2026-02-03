@@ -16,6 +16,14 @@ export default function SignUp() {
 
   const handleError = (error: any) => {
     console.error('Signup error:', error);
+    
+    // ステータスコードが409（Conflict）の場合は重複エラー
+    if (error?.response?.status === 409) {
+      const message = error?.response?.data?.message || '既に登録済みのユーザー名またはメールアドレスです';
+      alert(`登録エラー: ${message}`);
+      return;
+    }
+    
     if (error?.response?.data?.message) {
       const message = Array.isArray(error.response.data.message)
         ? error.response.data.message.join('\n')
