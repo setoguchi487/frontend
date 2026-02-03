@@ -1,5 +1,5 @@
 import {useState, useContext} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, Link} from 'react-router-dom';
 import {UserContext} from '../providers/UserProvider';
 import {sign_in} from '../api/Auth';
 import styled from 'styled-components';
@@ -80,6 +80,11 @@ export default function SignIn() {
           Login
         </SLoginButton>
       </SSignInRow>
+      <SSignInRow>
+        <SInlineText>
+          アカウントをお持ちでない方は <Link to="/register">こちら</Link>
+        </SInlineText>
+      </SSignInRow>
     </SSignInFrame>
   );
 }
@@ -119,4 +124,9 @@ const SLoginButton = styled.button`
   color: #f0f0f0;
   padding: 4px 16px;
   border-radius: 8px;
+`;
+
+const SInlineText = styled.span`
+  display: inline-block;
+  margin-top: 8px;
 `;
