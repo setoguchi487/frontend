@@ -92,31 +92,29 @@ export default function SignIn() {
 const SSignInFrame = styled.div`
   background-color: #f8f8f8;
   margin: 80px;
-  padding-top: 8px;
-  padding-bottom: 8px;
+  padding: 12px 16px;
   border-radius: 8px;
   box-shadow: 0 8px 8px #aaaaaa;
 `;
 
 const SSignInRow = styled.div`
-  display: inline-block;
-  margin-top: 4px;
-  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  width: 100%;
 `;
 
 const SSignInLabel = styled.span`
   display: inline-block;
-  width: 25%;
-  vertical-align: top;
+  width: 30%;
   text-align: right;
-  margin-right: 4px;
+  margin-right: 8px;
 `;
 
 const SSignInInput = styled.span`
   display: inline-block;
-  width: auto;
-  vertical-align: top;
-  margin-left: 4px;
+  flex: 1;
 `;
 
 const SLoginButton = styled.button`
@@ -127,6 +125,8 @@ const SLoginButton = styled.button`
 `;
 
 const SInlineText = styled.span`
-  display: inline-block;
+  display: block;
   margin-top: 8px;
+  font-size: 12px;
+  text-align: right;
 `;
