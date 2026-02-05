@@ -20,6 +20,7 @@ export default function PostList() {
 	const getPostList = async (page: number) => {
 		const response = await getList(userInfo.token, page, recordsPerPage);
 		console.log(response);
+		console.log('posts.length:', response?.posts?.length, 'page:', page, 'recordsPerPage:', recordsPerPage);
 
 		//getListで取得したポスト配列をコンテキストに保存
 		let postList: Array<PostType> = [];
@@ -102,6 +103,7 @@ export default function PostList() {
 			console.log('Searching for:', searchQuery);
 			const response = await searchPosts(searchQuery, userInfo.token, 1, recordsPerPage);
 			console.log('Search response:', response);
+			console.log('search posts.length:', response?.posts?.length, 'recordsPerPage:', recordsPerPage);
 
 			let postList: Array<PostType> = [];
 			if (response && response.posts) {
