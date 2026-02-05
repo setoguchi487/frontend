@@ -32,6 +32,7 @@ export default function PostList() {
 					created_at: new Date(p.created_at),
 				});
 			});
+			postList.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
 			// 総ページ数を計算
 			setTotalPages(Math.ceil(response.total / recordsPerPage));
 		}
@@ -112,6 +113,7 @@ export default function PostList() {
 						created_at: new Date(p.created_at),
 					});
 				});
+				postList.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
 				setTotalPages(Math.ceil(response.total / recordsPerPage));
 			}
 			setPostList(postList);
