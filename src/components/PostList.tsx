@@ -33,6 +33,10 @@ export default function PostList() {
 					created_at: new Date(p.created_at),
 				});
 			});
+			if (postList.length > recordsPerPage) {
+				const startIndex = (page - 1) * recordsPerPage;
+				postList = postList.slice(startIndex, startIndex + recordsPerPage);
+			}
 			postList.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
 			// 総ページ数を計算
 			setTotalPages(Math.ceil(response.total / recordsPerPage));
