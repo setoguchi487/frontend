@@ -43,6 +43,11 @@ export default function SignUp() {
       alert('全ての項目を入力してください');
       return;
     }
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      alert('パスワードは8文字以上で英数字の大文字・小文字を含めてください');
+      return;
+    }
     if (password !== passwordConfirm) {
       alert('パスワードが一致しません');
       return;
