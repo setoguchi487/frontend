@@ -75,16 +75,16 @@ export default function SignIn() {
           />
         </SSignInInput>
       </SSignInRow>
-      <SSignInRow>
+      <SSignInRowCenter>
         <SLoginButton type="button" onClick={onSignInClick}>
           Login
         </SLoginButton>
-      </SSignInRow>
-      <SSignInRow>
+      </SSignInRowCenter>
+      <SSignInRowCenter>
         <SInlineText>
           アカウントをお持ちでない方は <Link to="/register">こちら</Link>
         </SInlineText>
-      </SSignInRow>
+      </SSignInRowCenter>
     </SSignInFrame>
   );
 }
@@ -103,6 +103,10 @@ const SSignInRow = styled.div`
   margin-top: 6px;
   margin-bottom: 6px;
   width: 100%;
+`;
+
+const SSignInRowCenter = styled(SSignInRow)`
+  justify-content: center;
 `;
 
 const SSignInLabel = styled.span`
@@ -128,5 +132,5 @@ const SInlineText = styled.span`
   display: block;
   margin-top: 8px;
   font-size: 12px;
-  text-align: right;
+  text-align: center;
 `;
