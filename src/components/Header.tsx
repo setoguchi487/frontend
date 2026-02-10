@@ -8,25 +8,38 @@ export default function Header() {
 	const navigate = useNavigate();
 	const [ userName, setuserName ] = useState("");
 	const {userInfo, setUserInfo} = useContext(UserContext);
+	const onAccountClick = () => {
+		navigate("/account");
+	};
 	const logout = () => {
-		setUserInfo({id:0, token:""});
+		setUserInfo({id:0, token:"", name:""});
 		navigate("/");
 		
 	}
 
 	useEffect(() => {
 			const myGetUser = async () => {
-				const user = await getUser(userInfo.id, userInfo.token);
-				setuserName(user.user_name);
+				if (!userInfo.id || !userInfo.token) {
+					setuserName("");
+					return;
+				}
+				try {
+					const user = await getUser(userInfo.id, userInfo.token);
+					setuserName(user.name ?? userInfo.name);
+				} catch (error) {
+					console.error("Failed to load user info:", error);
+					setuserName(userInfo.name);
+				}
 			};
 			myGetUser();
-		}, []);
+		}, [userInfo.id, userInfo.token, userInfo.name]);
 		
 	return (
 		<SHeader>
 			<SLogo>MicroPost</SLogo>
 			<SRightItem>
 				<SName>{userName}</SName>
+				<SAccount onClick={onAccountClick}>マイアカウント</SAccount>
 				<SLogout onClick={logout}>ログアウト</SLogout>
 			</SRightItem>
 		</SHeader>
@@ -67,4 +80,12 @@ const SLogout = styled.div`
   padding-top: 8px;
   padding-bottom: 8px;
   text-align: center;
+`
+
+const SAccount = styled.div`
+	padding-top: 8px;
+	padding-bottom: 8px;
+	text-align: center;
+	margin-right: 12px;
+	cursor: pointer;
 `
