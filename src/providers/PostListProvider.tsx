@@ -7,6 +7,7 @@ import { useState, createContext, Dispatch, SetStateAction } from "react";
 
 export type PostType = {
   id: number;
+  user_id: number;
   user_name: string;
   content: string;
   created_at: Date;

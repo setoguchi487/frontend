@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../components/Header";
 import { UserContext } from "../providers/UserProvider";
 import { getUser } from "../api/User";
 
-type AccountData = {
+type ProfileData = {
   id: number;
   name: string;
   email: string;
@@ -26,28 +26,34 @@ const formatDate = (value?: string | null) => {
   return date.toLocaleDateString("ja-JP");
 };
 
-export default function Account() {
+export default function UserProfile() {
   const { userInfo } = useContext(UserContext);
-  const loggedIn = userInfo.token !== "";
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [account, setAccount] = useState<AccountData | null>(null);
+  const loggedIn = userInfo.token !== "";
+  const [profile, setProfile] = useState<ProfileData | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const loadAccount = async () => {
-      if (!userInfo.id || !userInfo.token) {
+    const loadProfile = async () => {
+      if (!id || !userInfo.token) {
         return;
       }
       try {
-        const data = await getUser(userInfo.id, userInfo.token);
-        setAccount(data);
+        const userId = Number(id);
+        if (!Number.isFinite(userId)) {
+          setError("ユーザIDが不正です");
+          return;
+        }
+        const data = await getUser(userId, userInfo.token);
+        setProfile(data);
       } catch (err) {
-        console.error("Failed to load account:", err);
+        console.error("Failed to load user profile:", err);
         setError("ユーザ情報の取得に失敗しました");
       }
     };
-    loadAccount();
-  }, [userInfo.id, userInfo.token]);
+    loadProfile();
+  }, [id, userInfo.token]);
 
   if (!loggedIn) {
     return <Navigate replace to="/" />;
@@ -60,27 +66,27 @@ export default function Account() {
       </SHeader>
       <SBody>
         <SCard>
-          <STitle>My Page</STitle>
+          <STitle>ユーザ情報</STitle>
           {error ? <SError>{error}</SError> : null}
           <SRow>
             <SLabel>ユーザ名</SLabel>
-            <SValue>{account?.name ?? userInfo.name}</SValue>
+            <SValue>{profile?.name ?? "-"}</SValue>
           </SRow>
           <SRow>
             <SLabel>メールアドレス</SLabel>
-            <SValue>{account?.email ?? "-"}</SValue>
+            <SValue>{profile?.email ?? "-"}</SValue>
           </SRow>
           <SRow>
             <SLabel>誕生日</SLabel>
-            <SValue>{formatDate(account?.birthday ?? null)}</SValue>
+            <SValue>{formatDate(profile?.birthday ?? null)}</SValue>
           </SRow>
           <SRow>
             <SLabel>プロフィール</SLabel>
-            <SValue>{account?.profile ?? "-"}</SValue>
+            <SValue>{profile?.profile ?? "-"}</SValue>
           </SRow>
           <SRow>
             <SLabel>作成日</SLabel>
-            <SValue>{formatDate(account?.created_at ?? null)}</SValue>
+            <SValue>{formatDate(profile?.created_at ?? null)}</SValue>
           </SRow>
           <SButtonRow>
             <SBackButton type="button" onClick={() => navigate("/main")}>

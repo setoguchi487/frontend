@@ -39,7 +39,7 @@ export default function Header() {
 			<SLogo>MicroPost</SLogo>
 			<SRightItem>
 				<SName>{userName}</SName>
-				<SAccount onClick={onAccountClick}>マイアカウント</SAccount>
+				<SAccount onClick={onAccountClick}>My Page</SAccount>
 				<SLogout onClick={logout}>ログアウト</SLogout>
 			</SRightItem>
 		</SHeader>

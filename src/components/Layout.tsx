@@ -23,6 +23,7 @@ export default function Layout() {
 			posts.forEach((p: any) => {
 				postList.push({
 					id: p.id,
+					user_id: p.user_id,
 					user_name: p.user_name,
 					content: p.content,
 					created_at: new Date(p.created_at),

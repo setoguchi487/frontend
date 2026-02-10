@@ -1,9 +1,11 @@
 import React from 'react';
-import {ReactNode } from 'react';
+import { ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 export default function Post(props: any) {
 	const { children, post, onDelete, currentUser } = props;
+	const navigate = useNavigate();
 	
 	console.log('Post render:', { 
 		id: post.id, 
@@ -34,11 +36,19 @@ export default function Post(props: any) {
 		});
 	}
 
+	const onNameClick = () => {
+		if (post.user_id) {
+			navigate(`/users/${post.user_id}`);
+		}
+	};
+
 	return (
 		<SPost>
 			<SHeader>
 				<SHeaderLeft>
-					<SName>{post.user_name}</SName>
+					<SNameButton type="button" onClick={onNameClick}>
+						{post.user_name}
+					</SNameButton>
 					<SDate>{getDateStr(post.created_at)}</SDate>
 				</SHeaderLeft>
 				{currentUser === post.user_name && (
@@ -70,9 +80,14 @@ const SHeaderLeft = styled.div`
   align-items: center;
 `
 
-const SName = styled.span`
+const SNameButton = styled.button`
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
   font-size: small;
   color: #000044;
+	text-decoration: underline;
 `
 
 const SDate = styled.span`
