@@ -9,10 +9,10 @@ const getUser = async (user_id: number, token: string) => {
 const updateUser = async (
   user_id: number,
   token: string,
-  updates: { profile?: string; birthday?: string },
+  profile: string,
 ) => {
   const url = `${process.env.REACT_APP_API_URL}/user/${user_id}?token=${token}`;
-  const res = await axios.patch(url, updates);
+  const res = await axios.patch(url, { profile });
   return res.data;
 };
 
