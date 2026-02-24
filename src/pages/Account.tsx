@@ -32,10 +32,8 @@ export default function Account() {
   const navigate = useNavigate();
   const [account, setAccount] = useState<AccountData | null>(null);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [profileInput, setProfileInput] = useState("");
-  const [passwordInput, setPasswordInput] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [birthdayInput, setBirthdayInput] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -47,6 +45,13 @@ export default function Account() {
         const data = await getUser(userInfo.id, userInfo.token);
         setAccount(data);
         setProfileInput(data?.profile ?? "");
+        if (data?.birthday) {
+          const date = new Date(data.birthday);
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          setBirthdayInput(`${year}-${month}-${day}`);
+        }
       } catch (err) {
         console.error("Failed to load account:", err);
         setError("ユーザ情報の取得に失敗しました");
@@ -65,38 +70,39 @@ export default function Account() {
       return;
     }
     setError("");
-    setSuccess("");
-
-    if (passwordInput && passwordInput !== passwordConfirm) {
-      setError("パスワードが一致しません");
-      return;
-    }
 
     const trimmedProfile = profileInput.trim();
-    const hasProfileChange = trimmedProfile !== (account?.profile ?? "").trim();
-    const hasPasswordChange = passwordInput.length > 0;
+    const originalProfile = (account?.profile ?? "").trim();
+    const hasProfileChange = trimmedProfile !== originalProfile;
 
-    if (!hasProfileChange && !hasPasswordChange) {
+    const originalBirthday = account?.birthday ? new Date(account.birthday).toISOString().split('T')[0] : "";
+    const hasBirthdayChange = birthdayInput !== originalBirthday;
+
+    if (!hasProfileChange && !hasBirthdayChange) {
       setError("更新内容がありません");
       return;
     }
 
     try {
       setSaving(true);
-      const updates: { profile?: string; password?: string } = {};
+      const updates: { profile?: string; birthday?: string } = {};
       if (hasProfileChange) {
         updates.profile = trimmedProfile;
       }
-      if (hasPasswordChange) {
-        updates.password = passwordInput;
+      if (hasBirthdayChange) {
+        updates.birthday = birthdayInput;
       }
 
       const data = await updateUser(userInfo.id, userInfo.token, updates);
       setAccount(data);
       setProfileInput(data?.profile ?? "");
-      setPasswordInput("");
-      setPasswordConfirm("");
-      setSuccess("更新しました");
+      if (data?.birthday) {
+        const date = new Date(data.birthday);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        setBirthdayInput(`${year}-${month}-${day}`);
+      }
     } catch (err) {
       console.error("Failed to update account:", err);
       setError("更新に失敗しました");
@@ -114,7 +120,6 @@ export default function Account() {
         <SCard>
           <STitle>My Page</STitle>
           {error ? <SError>{error}</SError> : null}
-          {success ? <SSuccess>{success}</SSuccess> : null}
           <SEditSection>
             <SEditTitle>編集</SEditTitle>
             <SForm onSubmit={handleSave}>
@@ -128,21 +133,12 @@ export default function Account() {
                 />
               </SInputRow>
               <SInputRow>
-                <SInputLabel htmlFor="password">新しいパスワード</SInputLabel>
+                <SInputLabel htmlFor="birthday">誕生日</SInputLabel>
                 <SInput
-                  id="password"
-                  type="password"
-                  value={passwordInput}
-                  onChange={(e) => setPasswordInput(e.target.value)}
-                />
-              </SInputRow>
-              <SInputRow>
-                <SInputLabel htmlFor="passwordConfirm">パスワード確認</SInputLabel>
-                <SInput
-                  id="passwordConfirm"
-                  type="password"
-                  value={passwordConfirm}
-                  onChange={(e) => setPasswordConfirm(e.target.value)}
+                  id="birthday"
+                  type="date"
+                  value={birthdayInput}
+                  onChange={(e) => setBirthdayInput(e.target.value)}
                 />
               </SInputRow>
               <SActionRow>
@@ -234,11 +230,6 @@ const SValue = styled.div`
 
 const SError = styled.div`
   color: #a30000;
-  margin-bottom: 12px;
-`;
-
-const SSuccess = styled.div`
-  color: #0f6b2b;
   margin-bottom: 12px;
 `;
 
