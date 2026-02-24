@@ -6,4 +6,14 @@ const getUser = async (user_id: number, token: string) => {
   return res.data;
 };
 
-export { getUser };
+const updateUser = async (
+  user_id: number,
+  token: string,
+  updates: { profile?: string; password?: string },
+) => {
+  const url = `${process.env.REACT_APP_API_URL}/user/${user_id}?token=${token}`;
+  const res = await axios.patch(url, updates);
+  return res.data;
+};
+
+export { getUser, updateUser };

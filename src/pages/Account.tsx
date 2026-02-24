@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Header from "../components/Header";
 import { UserContext } from "../providers/UserProvider";
-import { getUser } from "../api/User";
+import { getUser, updateUser } from "../api/User";
 
 type AccountData = {
   id: number;
@@ -32,6 +32,11 @@ export default function Account() {
   const navigate = useNavigate();
   const [account, setAccount] = useState<AccountData | null>(null);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [profileInput, setProfileInput] = useState("");
+  const [passwordInput, setPasswordInput] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const loadAccount = async () => {
@@ -41,6 +46,7 @@ export default function Account() {
       try {
         const data = await getUser(userInfo.id, userInfo.token);
         setAccount(data);
+        setProfileInput(data?.profile ?? "");
       } catch (err) {
         console.error("Failed to load account:", err);
         setError("ユーザ情報の取得に失敗しました");
@@ -53,6 +59,52 @@ export default function Account() {
     return <Navigate replace to="/" />;
   }
 
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userInfo.id || !userInfo.token) {
+      return;
+    }
+    setError("");
+    setSuccess("");
+
+    if (passwordInput && passwordInput !== passwordConfirm) {
+      setError("パスワードが一致しません");
+      return;
+    }
+
+    const trimmedProfile = profileInput.trim();
+    const hasProfileChange = trimmedProfile !== (account?.profile ?? "").trim();
+    const hasPasswordChange = passwordInput.length > 0;
+
+    if (!hasProfileChange && !hasPasswordChange) {
+      setError("更新内容がありません");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const updates: { profile?: string; password?: string } = {};
+      if (hasProfileChange) {
+        updates.profile = trimmedProfile;
+      }
+      if (hasPasswordChange) {
+        updates.password = passwordInput;
+      }
+
+      const data = await updateUser(userInfo.id, userInfo.token, updates);
+      setAccount(data);
+      setProfileInput(data?.profile ?? "");
+      setPasswordInput("");
+      setPasswordConfirm("");
+      setSuccess("更新しました");
+    } catch (err) {
+      console.error("Failed to update account:", err);
+      setError("更新に失敗しました");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <SPage>
       <SHeader>
@@ -62,6 +114,44 @@ export default function Account() {
         <SCard>
           <STitle>My Page</STitle>
           {error ? <SError>{error}</SError> : null}
+          {success ? <SSuccess>{success}</SSuccess> : null}
+          <SEditSection>
+            <SEditTitle>編集</SEditTitle>
+            <SForm onSubmit={handleSave}>
+              <SInputRow>
+                <SInputLabel htmlFor="profile">プロフィール</SInputLabel>
+                <STextArea
+                  id="profile"
+                  value={profileInput}
+                  rows={4}
+                  onChange={(e) => setProfileInput(e.target.value)}
+                />
+              </SInputRow>
+              <SInputRow>
+                <SInputLabel htmlFor="password">新しいパスワード</SInputLabel>
+                <SInput
+                  id="password"
+                  type="password"
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                />
+              </SInputRow>
+              <SInputRow>
+                <SInputLabel htmlFor="passwordConfirm">パスワード確認</SInputLabel>
+                <SInput
+                  id="passwordConfirm"
+                  type="password"
+                  value={passwordConfirm}
+                  onChange={(e) => setPasswordConfirm(e.target.value)}
+                />
+              </SInputRow>
+              <SActionRow>
+                <SSaveButton type="submit" disabled={saving}>
+                  {saving ? "保存中..." : "保存"}
+                </SSaveButton>
+              </SActionRow>
+            </SForm>
+          </SEditSection>
           <SRow>
             <SLabel>ユーザ名</SLabel>
             <SValue>{account?.name ?? userInfo.name}</SValue>
@@ -145,6 +235,72 @@ const SValue = styled.div`
 const SError = styled.div`
   color: #a30000;
   margin-bottom: 12px;
+`;
+
+const SSuccess = styled.div`
+  color: #0f6b2b;
+  margin-bottom: 12px;
+`;
+
+const SEditSection = styled.div`
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e6e6e6;
+`;
+
+const SEditTitle = styled.h3`
+  margin: 0 0 12px 0;
+  font-size: 16px;
+`;
+
+const SForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const SInputRow = styled.div`
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  align-items: center;
+  gap: 12px;
+`;
+
+const SInputLabel = styled.label`
+  color: #444444;
+  font-weight: 600;
+`;
+
+const SInput = styled.input`
+  padding: 8px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+`;
+
+const STextArea = styled.textarea`
+  padding: 8px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  resize: vertical;
+`;
+
+const SActionRow = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const SSaveButton = styled.button`
+  background-color: #222222;
+  color: #f8f8f8;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 `;
 
 const SButtonRow = styled.div`
