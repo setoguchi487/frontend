@@ -11,6 +11,7 @@ type ProfileData = {
   email: string;
   birthday?: string | null;
   profile?: string | null;
+  icon_url?: string | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -75,6 +76,16 @@ export default function UserProfile() {
           <SRow>
             <SLabel>メールアドレス</SLabel>
             <SValue>{profile?.email ?? "-"}</SValue>
+          </SRow>
+          <SRow>
+            <SLabel>アイコン</SLabel>
+            <SValue>
+              {profile?.icon_url ? (
+                <SIconDisplay src={profile.icon_url} alt="ユーザアイコン" />
+              ) : (
+                "-"
+              )}
+            </SValue>
           </SRow>
           <SRow>
             <SLabel>誕生日</SLabel>
@@ -166,4 +177,12 @@ const SBackButton = styled.button`
   border-radius: 8px;
   padding: 8px 16px;
   cursor: pointer;
+`;
+
+const SIconDisplay = styled.img`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #d0d0d0;
 `;

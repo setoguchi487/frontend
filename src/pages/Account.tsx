@@ -11,6 +11,7 @@ type AccountData = {
   email: string;
   birthday?: string | null;
   profile?: string | null;
+  icon_url?: string | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -33,6 +34,7 @@ export default function Account() {
   const [account, setAccount] = useState<AccountData | null>(null);
   const [error, setError] = useState("");
   const [profileInput, setProfileInput] = useState("");
+  const [iconUrlInput, setIconUrlInput] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -44,6 +46,7 @@ export default function Account() {
         const data = await getUser(userInfo.id, userInfo.token);
         setAccount(data);
         setProfileInput(data?.profile ?? "");
+        setIconUrlInput(data?.icon_url ?? "");
       } catch (err) {
         console.error("Failed to load account:", err);
         setError("ユーザ情報の取得に失敗しました");
@@ -67,16 +70,29 @@ export default function Account() {
     const originalProfile = (account?.profile ?? "").trim();
     const hasProfileChange = trimmedProfile !== originalProfile;
 
-    if (!hasProfileChange) {
+    const trimmedIconUrl = iconUrlInput.trim();
+    const originalIconUrl = (account?.icon_url ?? "").trim();
+    const hasIconUrlChange = trimmedIconUrl !== originalIconUrl;
+
+    if (!hasProfileChange && !hasIconUrlChange) {
       setError("更新内容がありません");
       return;
     }
 
+    const updates: { profile?: string; icon_url?: string } = {};
+    if (hasProfileChange) {
+      updates.profile = trimmedProfile;
+    }
+    if (hasIconUrlChange) {
+      updates.icon_url = trimmedIconUrl;
+    }
+
     try {
       setSaving(true);
-      const data = await updateUser(userInfo.id, userInfo.token, trimmedProfile);
+      const data = await updateUser(userInfo.id, userInfo.token, updates);
       setAccount(data);
       setProfileInput(data?.profile ?? "");
+      setIconUrlInput(data?.icon_url ?? "");
     } catch (err: any) {
       console.error("Failed to update account:", err);
       if (err.response?.data?.message) {
@@ -102,6 +118,26 @@ export default function Account() {
             <SEditTitle>編集</SEditTitle>
             <SForm onSubmit={handleSave}>
               <SInputRow>
+                <SInputLabel htmlFor="icon_url">アイコンURL</SInputLabel>
+                <SInput
+                  id="icon_url"
+                  type="text"
+                  value={iconUrlInput}
+                  onChange={(e) => setIconUrlInput(e.target.value)}
+                  placeholder="https://example.com/icon.png"
+                />
+              </SInputRow>
+              {iconUrlInput && (
+                <SIconPreviewRow>
+                  <SInputLabel>プレビュー</SInputLabel>
+                  <SIconPreview>
+                    <img src={iconUrlInput} alt="アイコンプレビュー" onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }} />
+                  </SIconPreview>
+                </SIconPreviewRow>
+              )}
+              <SInputRow>
                 <SInputLabel htmlFor="profile">プロフィール</SInputLabel>
                 <STextArea
                   id="profile"
@@ -124,6 +160,16 @@ export default function Account() {
           <SRow>
             <SLabel>メールアドレス</SLabel>
             <SValue>{account?.email ?? "-"}</SValue>
+          </SRow>
+          <SRow>
+            <SLabel>アイコン</SLabel>
+            <SValue>
+              {account?.icon_url ? (
+                <SIconDisplay src={account.icon_url} alt="ユーザアイコン" />
+              ) : (
+                "-"
+              )}
+            </SValue>
           </SRow>
           <SRow>
             <SLabel>誕生日</SLabel>
@@ -276,4 +322,38 @@ const SBackButton = styled.button`
   border-radius: 8px;
   padding: 8px 16px;
   cursor: pointer;
+`;
+
+const SIconPreviewRow = styled.div`
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+`;
+
+const SIconPreview = styled.div`
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #d0d0d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f8f8;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
+const SIconDisplay = styled.img`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #d0d0d0;
 `;
