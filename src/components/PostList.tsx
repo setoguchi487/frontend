@@ -19,8 +19,6 @@ export default function PostList() {
 	//ポスト一覧を取得する関数
 	const getPostList = async (page: number) => {
 		const response = await getList(userInfo.token, page, recordsPerPage);
-		console.log(response);
-		console.log('posts.length:', response?.posts?.length, 'page:', page, 'recordsPerPage:', recordsPerPage);
 
 		//getListで取得したポスト配列をコンテキストに保存
 		let postList: Array<PostType> = [];
@@ -48,7 +46,6 @@ export default function PostList() {
 	//コンポーネントがレンダリングされたときにポスト一覧を取得
 	useEffect(() => {
 		if (userInfo.token) {
-			console.log('Fetching posts for page:', currentPage);
 			getPostList(currentPage);
 		}
 	}, [currentPage, userInfo.token, refreshTrigger]);
@@ -76,14 +73,10 @@ export default function PostList() {
 	const handleDelete = async (postId: number) => {
 		if (window.confirm('このメッセージを削除しますか？')) {
 			try {
-				console.log('Attempting to delete post:', postId);
 				await deletePost(postId, userInfo.token);
-				console.log('Delete successful');
 				await getPostList(currentPage);
 			} catch (error: any) {
-				console.error('Failed to delete post:', error);
 				if (error.response) {
-					console.error('Error response:', error.response.data);
 					alert(`削除に失敗しました: ${error.response.data.message || error.response.statusText}`);
 				} else {
 					alert('削除に失敗しました');
@@ -105,10 +98,7 @@ export default function PostList() {
 		setCurrentPage(1);
 		
 		try {
-			console.log('Searching for:', searchQuery);
 			const response = await searchPosts(searchQuery, userInfo.token, 1, recordsPerPage);
-			console.log('Search response:', response);
-			console.log('search posts.length:', response?.posts?.length, 'recordsPerPage:', recordsPerPage);
 
 			let postList: Array<PostType> = [];
 			if (response && response.posts) {
@@ -126,7 +116,6 @@ export default function PostList() {
 			}
 			setPostList(postList);
 		} catch (error: any) {
-			console.error('Search failed:', error);
 			alert('検索に失敗しました');
 		}
 	};
@@ -149,7 +138,7 @@ export default function PostList() {
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
 					/>
-					<SSearchButton type="submit">🔍 検索</SSearchButton>
+					<SSearchButton type="submit">検索</SSearchButton>
 					{isSearching && (
 						<SClearSearchButton type="button" onClick={handleClearSearch}>
 							✕ クリア
