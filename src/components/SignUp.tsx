@@ -35,7 +35,7 @@ export default function SignUp() {
       alert(`登録エラー: ${error.message}`);
       return;
     }
-    alert('登録に失敗しました。サーバーの状態を確認してください。');
+    alert('登録に失敗しました。');
   };
 
   const onSignUpClick = async () => {

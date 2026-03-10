@@ -15,11 +15,11 @@ export type PostType = {
 
 export const PostListContext = createContext(
   {} as {
-    postList: PostType[]; // ポストの配列を保持
+    postList: PostType[]; 
     setPostList: Dispatch<SetStateAction<PostType[]>>;
-    currentPage: number; // 現在のページ番号
+    currentPage: number; 
     setCurrentPage: Dispatch<SetStateAction<number>>;
-    refreshTrigger: number; // リフレッシュ用トリガー
+    refreshTrigger: number; 
     triggerRefresh: () => void;
   },
 );
