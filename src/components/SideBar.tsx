@@ -14,7 +14,7 @@ export default function SideBar() {
 		await post(String(userInfo.id), userInfo.token, msg);
 		setMsg(""); // メッセージをクリア
 		setCurrentPage(1); // ページを1にリセット
-		triggerRefresh(); // リストを強制更新
+		triggerRefresh(); // リストを更新
 	} catch (error) {
 		console.error('Failed to send message:', error);
 		alert('メッセージの送信に失敗しました');

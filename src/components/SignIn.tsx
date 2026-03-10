@@ -27,7 +27,7 @@ export default function SignIn() {
         navigate('/main');
       } else {
         console.error('No token received in response');
-        alert('ログインに失敗しました: トークンが取得できませんでした');
+        alert('ログインに失敗しました');
       }
     } catch (error: any) {
       console.error('Login error:', error);
