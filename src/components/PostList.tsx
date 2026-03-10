@@ -173,7 +173,7 @@ export default function PostList() {
 					次のページ
 				</SPaginationButton>
 				<SReloadButton onClick={handleReload}>
-					🔄 リロード
+					リロード
 				</SReloadButton>
 			</SPaginationContainer>
 		</SContainer>
