@@ -2,6 +2,7 @@ import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { sign_up } from '../api/Auth';
+import { setAuthToken } from '../api/axiosInstance';
 import { UserContext } from '../providers/UserProvider';
 
 export default function SignUp() {
@@ -15,8 +16,6 @@ export default function SignUp() {
   const [submitting, setSubmitting] = useState(false);
 
   const handleError = (error: any) => {
-    console.error('Signup error:', error);
-    
     // ステータスコードが409（Conflict）の場合は重複エラー
     if (error?.response?.status === 409) {
       const message = error?.response?.data?.message || '既に登録済みのユーザー名またはメールアドレスです';
@@ -57,6 +56,7 @@ export default function SignUp() {
       setSubmitting(true);
       const ret = await sign_up(name, email, password);
       if (ret && ret.token) {
+        setAuthToken(ret.token);
         setUserInfo({ id: ret.user_id, token: ret.token, name: ret.name });
         navigate('/main');
       } else {

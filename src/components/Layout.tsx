@@ -1,37 +1,13 @@
-import { useContext, useLayoutEffect } from 'react';
+import { useContext } from 'react';
 import styled from 'styled-components';
 import Header from './Header';
 import SideBar from './SideBar';
 import Contents from './Body';
 import { UserContext } from '../providers/UserProvider';
-import { PostListContext, PostType } from '../providers/PostListProvider';
-import { getList } from '../api/Post';
 
 
 export default function Layout() {
 	const { userInfo } = useContext(UserContext);
-	const { setPostList } = useContext(PostListContext);
-
-	const getPostList = async () => {
-		console.log("Layout:getPostList");
-		const posts = await getList(userInfo.token);
-
-		console.log(posts);
-
-		let postList: Array<PostType> = [];
-		if (posts) {
-			posts.forEach((p: any) => {
-				postList.push({
-					id: p.id,
-					user_id: p.user_id,
-					user_name: p.user_name,
-					content: p.content,
-					created_at: new Date(p.created_at),
-				});
-			});
-		}
-		setPostList(postList);
-	};
 
 	return (
 		<>

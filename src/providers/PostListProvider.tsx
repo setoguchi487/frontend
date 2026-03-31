@@ -24,7 +24,7 @@ export const PostListContext = createContext(
   },
 );
 
-export const PostListProvider = (props: any) => {
+export const PostListProvider = (props: { children: React.ReactNode }) => {
   const { children } = props;
   const [postList, setPostList] = useState<PostType[]>([]);
   const [currentPage, setCurrentPage] = useState(1);

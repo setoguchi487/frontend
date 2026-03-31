@@ -11,7 +11,7 @@ export default function SideBar() {
 
   const onSendClick = async () => {
 	try {
-		await post(String(userInfo.id), userInfo.token, msg);
+		await post(msg);
 		setMsg(""); // メッセージをクリア
 		setCurrentPage(1); // ページを1にリセット
 		triggerRefresh(); // リストを更新

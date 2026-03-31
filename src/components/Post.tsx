@@ -2,26 +2,24 @@ import React from 'react';
 import { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { PostType } from '../providers/PostListProvider';
 
-export default function Post(props: any) {
-	const { children, post, onDelete, currentUser } = props;
+type PostProps = {
+	post: PostType;
+	onDelete: (postId: number) => void;
+	currentUserId: number;
+};
+
+export default function Post({ post, onDelete, currentUserId }: PostProps) {
 	const navigate = useNavigate();
 	
-	console.log('Post render:', { 
-		id: post.id, 
-		id_type: typeof post.id,
-		currentUser, 
-		post_user_name: post.user_name, 
-		match: currentUser === post.user_name 
-	});
-	
 	const getDateStr = (dateObj: Date) => {
-		const year = post.created_at.getFullYear();
-		const month = post.created_at.getMonth() + 1;
-		const date = post.created_at.getDate();
-		const hours = post.created_at.getHours();
-		const minutes = post.created_at.getMinutes();
-		const seconds = post.created_at.getSeconds();
+		const year = dateObj.getFullYear();
+		const month = dateObj.getMonth() + 1;
+		const date = dateObj.getDate();
+		const hours = dateObj.getHours();
+		const minutes = dateObj.getMinutes();
+		const seconds = dateObj.getSeconds();
 		return `${year}/${month}/${date} ${hours}:${minutes}:${seconds}`;
 	};
 
@@ -51,7 +49,7 @@ export default function Post(props: any) {
 					</SNameButton>
 					<SDate>{getDateStr(post.created_at)}</SDate>
 				</SHeaderLeft>
-				{currentUser === post.user_name && (
+				{currentUserId === post.user_id && (
 					<SDeleteButton onClick={() => onDelete(post.id)}>
 						×
 					</SDeleteButton>

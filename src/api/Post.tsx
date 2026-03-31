@@ -1,51 +1,24 @@
-import axios from "axios";
+import apiClient from "./axiosInstance";
 
-const post = async (user_id: string, token: string,msg: string) => {
-    const data = {
-        message: msg,
-        token: token
-    };
-    const url = `${process.env.REACT_APP_API_URL}/post`;
-    const res = await axios.post(url, data);
+const post = async (msg: string) => {
+    await apiClient.post('/post', { message: msg });
 }
 
-const getList = async (token: string, page: number = 1, records: number = 10) => {
+const getList = async (page: number = 1, records: number = 10) => {
   const start = (page - 1) * records;
-  const url = `${process.env.REACT_APP_API_URL}/post?token=${token}&start=${start}&records=${records}`;
-  const res = await axios.get(url);
+  const res = await apiClient.get(`/post?start=${start}&records=${records}`);
   return res.data;
 };
 
-const deletePost = async (postId: number, token: string) => {
-  const url = `${process.env.REACT_APP_API_URL}/post/${postId}?token=${token}`;
-  
-  try {
-    const res = await axios.delete(url);
-    return res.data;
-  } catch (error: any) {
-    console.error('Delete API error:', error);
-    if (error.response) {
-      console.error('Error status:', error.response.status);
-      console.error('Error data:', error.response.data);
-    }
-    throw error;
-  }
+const deletePost = async (postId: number) => {
+  const res = await apiClient.delete(`/post/${postId}`);
+  return res.data;
 };
-const searchPosts = async (query: string, token: string, page: number = 1, records: number = 10) => {
+
+const searchPosts = async (query: string, page: number = 1, records: number = 10) => {
   const start = (page - 1) * records;
-  const url = `${process.env.REACT_APP_API_URL}/post/search?q=${encodeURIComponent(query)}&token=${token}&start=${start}&records=${records}`;
-  
-  try {
-    const res = await axios.get(url);
-    return res.data;
-  } catch (error: any) {
-    console.error('Search API error:', error);
-    if (error.response) {
-      console.error('Error status:', error.response.status);
-      console.error('Error data:', error.response.data);
-    }
-    throw error;
-  }
+  const res = await apiClient.get(`/post/search?q=${encodeURIComponent(query)}&start=${start}&records=${records}`);
+  return res.data;
 };
 
 export { post, getList, deletePost, searchPosts };

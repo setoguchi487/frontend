@@ -43,7 +43,7 @@ export default function Account() {
         return;
       }
       try {
-        const data = await getUser(userInfo.id, userInfo.token);
+        const data = await getUser(userInfo.id);
         setAccount(data);
         setProfileInput(data?.profile ?? "");
         setIconUrlInput(data?.icon_url ?? "");
@@ -89,7 +89,7 @@ export default function Account() {
 
     try {
       setSaving(true);
-      const data = await updateUser(userInfo.id, userInfo.token, updates);
+      const data = await updateUser(userInfo.id, updates);
       setAccount(data);
       setProfileInput(data?.profile ?? "");
       setIconUrlInput(data?.icon_url ?? "");

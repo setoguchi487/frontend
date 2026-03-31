@@ -2,6 +2,7 @@ import {useState, useContext} from 'react';
 import {useNavigate, Link} from 'react-router-dom';
 import {UserContext} from '../providers/UserProvider';
 import {sign_in} from '../api/Auth';
+import {setAuthToken} from '../api/axiosInstance';
 import styled from 'styled-components';
 
 export default function SignIn() {
@@ -12,25 +13,20 @@ export default function SignIn() {
 
   const onSignInClick = async () => {
     try {
-      console.log('Attempting login...');
       const ret = await sign_in(userId, pass);
-      console.log('Login response:', ret);
       
       if (ret && ret.token) {
-        console.log(`Sign in successful. ${ret.user_id}, ${ret.token}`);
+        setAuthToken(ret.token);
         setUserInfo({
           id: ret.user_id,
           token: ret.token,
           name: ret.name,
         });
-        console.log('Navigating to /main');
         navigate('/main');
       } else {
-        console.error('No token received in response');
         alert('ログインに失敗しました');
       }
     } catch (error: any) {
-      console.error('Login error:', error);
       if (error.message) {
         alert(`ログインエラー: ${error.message}`);
       } else if (error.response) {

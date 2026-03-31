@@ -24,7 +24,7 @@ export default function Header() {
 					return;
 				}
 				try {
-					const user = await getUser(userInfo.id, userInfo.token);
+					const user = await getUser(userInfo.id);
 					setuserName(user.name ?? userInfo.name);
 				} catch (error) {
 					console.error("Failed to load user info:", error);

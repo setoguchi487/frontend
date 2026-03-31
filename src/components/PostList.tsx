@@ -5,6 +5,22 @@ import { getList, deletePost, searchPosts } from "../api/Post";
 import { UserContext } from "../providers/UserProvider";
 import styled from "styled-components";
 
+type RawPost = {
+	id: number;
+	user_id: number;
+	user_name: string;
+	content: string;
+	created_at: string;
+};
+
+const toPostType = (p: RawPost): PostType => ({
+	id: p.id,
+	user_id: p.user_id,
+	user_name: p.user_name,
+	content: p.content,
+	created_at: new Date(p.created_at),
+});
+
 export default function PostList() {
 	//ポストリストコンテキスト、ユーザーコンテキストの使用
 	const { postList, setPostList, currentPage, setCurrentPage, refreshTrigger } = useContext(PostListContext);
@@ -18,29 +34,25 @@ export default function PostList() {
 
 	//ポスト一覧を取得する関数
 	const getPostList = async (page: number) => {
-		const response = await getList(userInfo.token, page, recordsPerPage);
+		try {
+			const response = await getList(page, recordsPerPage);
 
-		//getListで取得したポスト配列をコンテキストに保存
-		let postList: Array<PostType> = [];
-		if (response && response.posts) {
-			response.posts.forEach((p: any) => {
-				postList.push({
-					id: p.id,
-					user_id: p.user_id,
-					user_name: p.user_name,
-					content: p.content,
-					created_at: new Date(p.created_at),
-				});
-			});
-			if (postList.length > recordsPerPage) {
-				const startIndex = (page - 1) * recordsPerPage;
-				postList = postList.slice(startIndex, startIndex + recordsPerPage);
+			//getListで取得したポスト配列をコンテキストに保存
+			let postList: Array<PostType> = [];
+			if (response && response.posts) {
+				postList = response.posts.map((p: RawPost) => toPostType(p));
+				if (postList.length > recordsPerPage) {
+					const startIndex = (page - 1) * recordsPerPage;
+					postList = postList.slice(startIndex, startIndex + recordsPerPage);
+				}
+				postList.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
+				// 総ページ数を計算
+				setTotalPages(Math.ceil(response.total / recordsPerPage));
 			}
-			postList.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
-			// 総ページ数を計算
-			setTotalPages(Math.ceil(response.total / recordsPerPage));
+			setPostList(postList);
+		} catch (error) {
+			alert("投稿一覧の取得に失敗しました");
 		}
-		setPostList(postList);
 	};
 	
 	//コンポーネントがレンダリングされたときにポスト一覧を取得
@@ -73,7 +85,7 @@ export default function PostList() {
 	const handleDelete = async (postId: number) => {
 		if (window.confirm('このメッセージを削除しますか？')) {
 			try {
-				await deletePost(postId, userInfo.token);
+				await deletePost(postId);
 				await getPostList(currentPage);
 			} catch (error: any) {
 				if (error.response) {
@@ -98,24 +110,16 @@ export default function PostList() {
 		setCurrentPage(1);
 		
 		try {
-			const response = await searchPosts(searchQuery, userInfo.token, 1, recordsPerPage);
+			const response = await searchPosts(searchQuery, 1, recordsPerPage);
 
 			let postList: Array<PostType> = [];
 			if (response && response.posts) {
-				response.posts.forEach((p: any) => {
-					postList.push({
-						id: p.id,
-						user_id: p.user_id,
-						user_name: p.user_name,
-						content: p.content,
-						created_at: new Date(p.created_at),
-					});
-				});
+				postList = response.posts.map((p: RawPost) => toPostType(p));
 				postList.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
 				setTotalPages(Math.ceil(response.total / recordsPerPage));
 			}
 			setPostList(postList);
-		} catch (error: any) {
+		} catch (error) {
 			alert('検索に失敗しました');
 		}
 	};
@@ -153,7 +157,7 @@ export default function PostList() {
 			</SSearchContainer>
 			<SPostList>
 				{postList.map((p) => (
-					<Post key={p.id} post={p} onDelete={handleDelete} currentUser={userInfo.name} />
+					<Post key={p.id} post={p} onDelete={handleDelete} currentUserId={userInfo.id} />
 				))}
 			</SPostList>
 			<SPaginationContainer>

@@ -1,21 +1,18 @@
-import axios from "axios";
+import apiClient from "./axiosInstance";
 
-const getUser = async (user_id: number, token: string) => {
-  const url = `${process.env.REACT_APP_API_URL}/user/${user_id}?token=${token}`;
-  const res = await axios.get(url);
+const getUser = async (user_id: number) => {
+  const res = await apiClient.get(`/user/${user_id}`);
   return res.data;
 };
 
 const updateUser = async (
   user_id: number,
-  token: string,
   updates: {
     profile?: string;
     icon_url?: string;
   }
 ) => {
-  const url = `${process.env.REACT_APP_API_URL}/user/${user_id}?token=${token}`;
-  const res = await axios.patch(url, updates);
+  const res = await apiClient.patch(`/user/${user_id}`, updates);
   return res.data;
 };
 

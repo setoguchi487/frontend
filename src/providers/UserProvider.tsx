@@ -15,7 +15,7 @@ export const UserContext = createContext(
   },
 );
 
-export const UserProvider = (props: any) => {
+export const UserProvider = (props: { children: React.ReactNode }) => {
   const { children } = props;
   const [userInfo, setUserInfo] = useState<UserInfo>({ id: 0, token: "", name: "" });
   return (

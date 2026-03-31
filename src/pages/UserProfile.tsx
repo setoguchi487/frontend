@@ -46,7 +46,7 @@ export default function UserProfile() {
           setError("ユーザIDが不正です");
           return;
         }
-        const data = await getUser(userId, userInfo.token);
+        const data = await getUser(userId);
         setProfile(data);
       } catch (err) {
         console.error("Failed to load user profile:", err);
